@@ -1,0 +1,21 @@
+deploy pro:
+   image: python:latest
+   stage: deploy
+   only:
+      - master
+   script:
+      - pip install awscli
+      - date="$(date -d '+1 months' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+      - aws s3 sync ./dist s3://int.pypcar.com --delete --metadata-directive REPLACE --cache-control max-age=604800,no-cache,no-store,must-revalidate --expires $date
+      #- aws cloudfront create-invalidation --distribution-id E1LAN9SXGYIFEN --paths '/*'
+deploy dev:
+   image: python:latest
+   stage: deploy
+   only:
+      - develop
+   script:
+      - pip install awscli
+      - date="$(date -d '+1 months' --utc +'%Y-%m-%dT%H:%M:%SZ')"
+      - aws s3 sync ./dist s3://dint.pypcar.com --delete --metadata-directive REPLACE --cache-control max-age=604800,no-cache,no-store,must-revalidate --expires $date
+      #- aws cloudfront create-invalidation --distribution-id E1LAN9SXGYIFEN --paths '/*'
+
